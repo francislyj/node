@@ -198,6 +198,10 @@ integration_test: build
 	@echo "-->Integration Test"
 	@./integration_test.sh
 
+integration_test1: build
+	@echo "-->Integration Test"
+	@./integration_test1.sh
+
 ########################################
 ### Pre Commit
 pre_commit: build test format lint

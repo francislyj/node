@@ -579,6 +579,17 @@ func (app *BinanceChain) initSlashing() {
 			DowntimeSlashAmount:      50e8,
 			DowntimeSlashFee:         10e8,
 		})
+		app.slashKeeper.SetParams(ctx, slashing.Params{
+			MaxEvidenceAge:           60 * 60 * 24 * 3 * time.Second, // 3 days
+			DoubleSignUnbondDuration: math.MaxInt64,                  // forever
+			DowntimeUnbondDuration:   60 * 60 * 24 * 2 * time.Second, // 2 days
+			TooLowDelUnbondDuration:  60 * 60 * 24 * time.Second,     // 1 day
+			DoubleSignSlashAmount:    10000e8,
+			SubmitterReward:          1000e8,
+			DowntimeSlashAmount:      50e8,
+			DowntimeSlashFee:         10e8,
+			SignedBlocksWindow:       100,
+		})
 	})
 }
 
@@ -669,6 +680,10 @@ func (app *BinanceChain) initChainerFn() sdk.InitChainer {
 				}
 			}
 			_, validators = app.stakeKeeper.ApplyAndReturnValidatorSetUpdates(ctx)
+		}
+
+		if len(validators) > 0 {
+			app.slashKeeper.AddValidators(ctx, validators)
 		}
 
 		// sanity check
@@ -782,6 +797,7 @@ func (app *BinanceChain) isBreatheBlock(height int64, lastBlockTime time.Time, b
 
 func (app *BinanceChain) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) (res abci.ResponseBeginBlock) {
 	upgrade.Mgr.BeginBlocker(ctx)
+	slashing.BeginBlocker(ctx, req, app.slashKeeper)
 	return
 }
 
@@ -836,6 +852,7 @@ func (app *BinanceChain) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) a
 	ibc.EndBlocker(ctx, app.ibcKeeper)
 	if len(validatorUpdates) != 0 {
 		app.ValAddrCache.ClearCache()
+		app.slashKeeper.AddValidators(ctx, validatorUpdates)
 	}
 
 	if app.publicationConfig.ShouldPublishAny() &&
