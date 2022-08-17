@@ -579,6 +579,7 @@ func (app *BinanceChain) initSlashing() {
 			DowntimeSlashAmount:      50e8,
 			DowntimeSlashFee:         10e8,
 		})
+		// Todo: change config of slash keeper params
 		app.slashKeeper.SetParams(ctx, slashing.Params{
 			MaxEvidenceAge:           60 * 60 * 24 * 3 * time.Second, // 3 days
 			DoubleSignUnbondDuration: math.MaxInt64,                  // forever
