@@ -254,6 +254,12 @@ func Staking() error {
 		return xerrors.Errorf("edit validator error: %w", err)
 	}
 	assert(txRes.Code == 0, fmt.Sprintf("edit validator tx return err, tx: %+v", txRes))
+
+	fmt.Println(" ==============================================================> EditSideChainValidatorTest begin")
+	txRes, err = c0.EditSideChainValidatorTest(msg.Description(des2), nil, consensusPubKey2, rpc.Commit, tx.WithChainID(chainId))
+	fmt.Printf("txRes %v, err %v", txRes, err)
+	fmt.Println(" ==============================================================> EditSideChainValidatorTest end")
+
 	// check edit validator change
 	validator, err = c0.QueryValidator(sdkTypes.ValAddress(validator0.GetAddr()))
 	if err != nil {

@@ -91,6 +91,6 @@ bob_addr=$(./bnbcli keys list --home ${cli_home} | grep bob | grep -o "bnb1[0-9a
 result=$(expect ./send.exp ${cli_home} alice ${chain_id} "100000000000000:BNB" ${bob_addr})
 check_operation "Send Token" "${result}" "${chain_operation_words}"
 
-go run ../cmd/test_client
+#go run ../cmd/test_client
 
-exit_test 0
+#exit_test 0
